@@ -1,0 +1,85 @@
+-- Création de la table Users
+DROP TABLE IF EXISTS Users;
+CREATE TABLE Users (
+    id_Users INT AUTO_INCREMENT NOT NULL,
+    created_at_Users TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at_Users TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    email_Users VARCHAR(255) NOT NULL,
+    username_Users VARCHAR(255) NOT NULL,
+    password_Users VARCHAR(255) NOT NULL,
+    remember_me_token_Users VARCHAR(255),
+    PRIMARY KEY (id_Users)
+) ENGINE=InnoDB;
+
+-- Création de la table ApiTokens
+DROP TABLE IF EXISTS ApiTokens;
+CREATE TABLE ApiTokens (
+    id_ApiToken BIGINT AUTO_INCREMENT NOT NULL,
+    user_id_ApiToken INT,
+    name_ApiToken VARCHAR(255),
+    type_ApiToken VARCHAR(255),
+    token_ApiToken VARCHAR(255),
+    expires_at_ApiToken TIMESTAMP,
+    created_at_ApiToken TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    users_id_users INT,
+    PRIMARY KEY (id_ApiToken),
+    FOREIGN KEY (user_id_ApiToken) REFERENCES Users (id_Users),
+    FOREIGN KEY (users_id_users) REFERENCES Users (id_Users)
+) ENGINE=InnoDB;
+
+-- Création de la table Contacts
+DROP TABLE IF EXISTS Contacts;
+CREATE TABLE Contacts (
+    id_Contact BIGINT AUTO_INCREMENT NOT NULL,
+    requesterId_Contact INT,
+    contactId_Contact INT,
+    request_status_Contact INT,
+    created_at_Contact TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at_Contact TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    PRIMARY KEY (id_Contact)
+) ENGINE=InnoDB;
+
+-- Création de la table Conversations
+DROP TABLE IF EXISTS Conversations;
+CREATE TABLE Conversations (
+    id_Conversations BIGINT AUTO_INCREMENT NOT NULL,
+    userId1_Conversations INT,
+    userId2_Conversations INT,
+    created_at_Conversations TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at_Conversations TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    PRIMARY KEY (id_Conversations)
+) ENGINE=InnoDB;
+
+-- Création de la table Messages
+DROP TABLE IF EXISTS Messages;
+CREATE TABLE Messages (
+    id_Messages BIGINT AUTO_INCREMENT NOT NULL,
+    conversation_id_Messages BIGINT,
+    sender_id_Messages INT,
+    receiver_id_Messages INT,
+    created_at_Messages TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at_Messages TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    content_Messages TEXT,
+    PRIMARY KEY (id_Messages),
+    FOREIGN KEY (conversation_id_Messages) REFERENCES Conversations (id_Conversations)
+) ENGINE=InnoDB;
+
+-- Création de la table Association_7
+DROP TABLE IF EXISTS Association_7;
+CREATE TABLE Association_7 (
+    id_Contact INT AUTO_INCREMENT NOT NULL,
+    id_Users INT NOT NULL,
+    PRIMARY KEY (id_Contact, id_Users),
+    FOREIGN KEY (id_Contact) REFERENCES Contacts (id_Contact),
+    FOREIGN KEY (id_Users) REFERENCES Users (id_Users)
+) ENGINE=InnoDB;
+
+-- Création de la table possède_
+DROP TABLE IF EXISTS possede_;
+CREATE TABLE possede_ (
+    id_Conversations INT AUTO_INCREMENT NOT NULL,
+    id_Users INT NOT NULL,
+    PRIMARY KEY (id_Conversations, id_Users),
+    FOREIGN KEY (id_Conversations) REFERENCES Conversations (id_Conversations),
+    FOREIGN KEY (id_Users) REFERENCES Users (id_Users)
+) ENGINE=InnoDB;
