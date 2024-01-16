@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\LoginRequest;
 use App\Http\Requests\RegisterRequest;
 use App\Models\User;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
 class AuthController extends Controller
@@ -13,18 +14,17 @@ class AuthController extends Controller
     public function register(RegisterRequest $request)
     {
         $data = $request->validated();
-        /** @var User $user */
         $user = User::create([
             'username' => $data['username'],
             'email' => $data['email'],
             'password' => bcrypt($data['password']),
         ]);
-        // $token = $user->createToken('main')->plainTextToken;
+        $token = $user->createToken('auth_token')->plainTextToken;
         return response([
             'message' => 'Utilisateur crée',
             'user' => $user,
-            // 'user_id' => $user->id, // Ajoute l'ID de l'utilisateur à la réponse
-            // 'token' => $token,
+            'access_token' => $token,
+            'token_type' => 'Bearer',
         ]);
     }
 
@@ -38,27 +38,20 @@ class AuthController extends Controller
         }
 
         /** @var User $user */
-        $user = Auth::user();
-        // $token = $user->createToken('main')->plainTextToken;
-
-        // return response(['message' => 'Utilisateur connecté', $user]);
+        $user = User::where('email', $request['email'])->firstOrFail();
+        // $token = $user->createToken('auth_token')->plainTextToken;
 
         return response([
             'message' => 'Utilisateur connecté',
-            'user' => [
-                'id' => $user->id, // ou  si vous souhaitez utiliser le champ UUID
-                'username' => $user->username,
-                'email' => $user->email,
-                'created_at' => $user->created_at,
-                'updated_at' => $user->updated_at,
-            ],
-            // 'user_id' => $user->id, // Ajoute l'ID de l'utilisateur à la réponse
-            // 'token' => $token,
+            'user' => $user,
+            // 'access_token' => $token,
+            // 'token_type' => 'Bearer',
         ]);
     }
 
-    public function logout()
+    public function logout(Request $request)
     {
-
+        $request->user()->currentAccessToken()->delete();
+        return response(['message' => 'Utilisateur déconnecté']);
     }
 }
