@@ -1,35 +1,63 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
-
+import { useEffect } from "react";
+import { useAuth } from "./contexts/AuthProvider";
+import { Navigate } from "react-router-dom";
 function App() {
-  const [count, setCount] = useState(0)
+    const { userData, token, setUserData, setToken } = useAuth();
 
-  return (
-    <>
-      <div>
-        <a href="https://vitejs.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.jsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  )
+    useEffect(() => {
+        console.log(userData.username);
+    }, []);
+
+    if (!userData) {
+        return <Navigate to="/login" />;
+    }
+
+    const onLogout = async (e) => {
+        e.preventDefault();
+
+        await fetch(`${import.meta.env.VITE_API_BASE_URL}/logout`, {
+          method: "POST",
+          headers: { 
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${token}`, 
+          },
+          mode: "cors",
+          body: JSON.stringify()
+      })
+          .then((response) => {
+              if (!response.ok) {
+                  throw new Error("Réponse réseau incorrecte");
+              }
+              return response.json();
+          })
+          .then((data) => {
+              console.log(data);
+              setUserData(null);
+              setToken(null)
+          })
+          .catch((error) => {
+              console.error(error);
+          });
+    };
+
+    return (
+        <div>
+            <header>
+                <nav>
+                    <div>{userData.username}</div>
+                    <div>
+                        <button
+                            onClick={onLogout}
+                            className="flex justify-center rounded-md bg-indigo-600 px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+                        >
+                            Deconnexion
+                        </button>
+                    </div>
+                </nav>
+            </header>
+            Hello World
+        </div>
+    );
 }
 
-export default App
+export default App;

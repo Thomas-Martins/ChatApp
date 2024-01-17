@@ -20,12 +20,13 @@ use Illuminate\Support\Facades\Route;
 //     return $request->user();
 // });
 Route::middleware('auth:sanctum')->group(function () {
-  Route::get('/users', function(){
-    return User::all();
-  });
+
   Route::post('/logout', [AuthController::class,'logout']);
 });
 //Authentication routes
 Route::post('/register', [AuthController::class,'register']);
 Route::post('/login', [AuthController::class,'login']);
 
+Route::get('/users', function(){
+  return User::all();
+});
