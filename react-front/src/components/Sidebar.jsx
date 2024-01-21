@@ -1,0 +1,128 @@
+import { useAuth } from "../contexts/AuthProvider";
+
+export default function Sidebar() {
+    const { userData, token, setUserData, setToken } = useAuth();
+
+    // Fonction pour récupérer la première lettre du nom d'utilisateur
+    const getInitials = (username) => {
+        // Assurez-vous que le nom d'utilisateur n'est pas vide
+        if (!username) return "";
+
+        // Séparez le nom d'utilisateur en mots
+        const words = username.split(" ");
+
+        // Obtenez la première lettre de chaque mot et joignez-les
+        const initials = words.map((word) => word.charAt(0)).join("");
+
+        return initials.toUpperCase(); // Assurez-vous que les initiales sont en majuscules
+    };
+
+    const onLogout = async (e) => {
+        e.preventDefault();
+
+        await fetch(`${import.meta.env.VITE_API_BASE_URL}/logout`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${token}`,
+            },
+            mode: "cors",
+            body: JSON.stringify(),
+        })
+            .then((response) => {
+                if (!response.ok) {
+                    throw new Error("Réponse réseau incorrecte");
+                }
+                return response.json();
+            })
+            .then((data) => {
+                console.log(data);
+                setUserData(null);
+                setToken(null);
+            })
+            .catch((error) => {
+                console.error(error);
+            });
+    };
+    return (
+        <div className="flex h-screen w-1/5 flex-col justify-between bg-gray-800">
+            <div className="px-4 py-6">
+                <span className="grid h-14 w-1/2 place-content-center rounded-lg border-2 border-white bg-indigo-400">
+                    <img src="../src/assets/images/logo/logo.png" />
+                </span>
+
+                <ul className="mt-6 space-y-1">
+                    <li className="inline-flex w-full justify-start items-center mb-2">
+                        <a
+                            href=""
+                            className="flex items-center text-sm font-medium text-gray-200 "
+                        >
+                            <span className="grid h-10 w-10 justify-center items-center rounded-lg bg-indigo-400 text-xl text-white font-semibold">
+                                C1
+                            </span>
+                            <div className="ml-3 font-semibold">
+                                Conversation 1
+                            </div>
+                        </a>
+                    </li>
+                    <li className="inline-flex w-full justify-start items-center mb-2">
+                        <a
+                            href=""
+                            className="flex items-center text-sm font-medium text-gray-200 "
+                        >
+                            <span className="grid h-10 w-10 justify-center items-center rounded-lg bg-indigo-400 text-xl text-white font-semibold">
+                                C2
+                            </span>
+                            <div className="ml-3 font-semibold">
+                                Conversation 2
+                            </div>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+
+            <div className="flex items-center sticky inset-x-0 bottom-0 border-t border-gray-600">
+                <a
+                    href="#"
+                    className="flex items-center gap-2 bg-gray-800 p-4 hover:bg-gray-700"
+                >
+                    <span className="grid h-10 w-10 justify-center items-center rounded-lg bg-indigo-400 text-xl text-white font-semibold">
+                        {getInitials(userData.username)}
+                    </span>
+
+                    <div>
+                        <p className="text-xs text-gray-200">
+                            <strong className="block font-medium">
+                                {userData.username}
+                            </strong>
+                            <span> {userData.email}</span>
+                        </p>
+                    </div>
+                </a>
+                <button
+                    onClick={onLogout}
+                    className="group relative flex w-full h-full justify-center items-center px-2 py-1.5 text-white hover:bg-gray-500"
+                >
+                    <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        className="h-5 w-5 opacity-75"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        stroke="currentColor"
+                        strokeWidth="2"
+                    >
+                        <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"
+                        />
+                    </svg>
+
+                    <span className="absolute start-full top-1/2 ms-4 -translate-y-1/2 rounded bg-gray-900 px-2 py-1.5 text-xs font-medium text-white invisible group-hover:visible">
+                        Logout
+                    </span>
+                </button>
+            </div>
+        </div>
+    );
+}
