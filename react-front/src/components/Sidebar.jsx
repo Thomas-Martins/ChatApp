@@ -1,20 +1,22 @@
+import { TiUserAddOutline } from "react-icons/ti";
 import { useAuth } from "../contexts/AuthProvider";
 
 export default function Sidebar() {
     const { userData, token, setUserData, setToken } = useAuth();
 
-    // Fonction pour récupérer la première lettre du nom d'utilisateur
+    // Function for getting the first letter of the username
     const getInitials = (username) => {
-        // Assurez-vous que le nom d'utilisateur n'est pas vide
+        // check if username is not empty
         if (!username) return "";
 
-        // Séparez le nom d'utilisateur en mots
+        // Split the username into words
         const words = username.split(" ");
 
-        // Obtenez la première lettre de chaque mot et joignez-les
+        // Get the first letter of each word and join them
         const initials = words.map((word) => word.charAt(0)).join("");
 
-        return initials.toUpperCase(); // Assurez-vous que les initiales sont en majuscules
+        // Make sure the initials are uppercase
+        return initials.toUpperCase();
     };
 
     const onLogout = async (e) => {
@@ -47,9 +49,14 @@ export default function Sidebar() {
     return (
         <div className="flex h-screen w-1/5 flex-col justify-between bg-gray-800">
             <div className="px-4 py-6">
-                <span className="grid h-14 w-1/2 place-content-center rounded-lg border-2 border-white bg-indigo-400">
-                    <img src="../src/assets/images/logo/logo.png" />
-                </span>
+                <div className="flex justify-between items-center">
+                    <span className="grid h-14 w-1/2 place-content-center rounded-lg border-2 border-white bg-indigo-400">
+                        <img src="../src/assets/images/logo/logo.png" />
+                    </span>
+                    <a href="/add-users">
+                        <TiUserAddOutline size={25} color="white" />
+                    </a>
+                </div>
 
                 <ul className="mt-6 space-y-1">
                     <li className="inline-flex w-full justify-start items-center mb-2">
