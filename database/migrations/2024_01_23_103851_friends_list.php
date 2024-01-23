@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->uuid('user_id');
             $table->uuid('friend_id');
-            $table->enum('status', ['Pending', 'Rejected', 'Accepted'])->default("Pending");
+            $table->enum('status', ['Pending', 'Rejected', 'Accepted'])->default('Pending');
             $table->timestamp('created_at')->nullable();
             $table->timestamp('updated_at')->nullable();
         });

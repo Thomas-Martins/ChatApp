@@ -28,8 +28,8 @@ Route::middleware('auth:sanctum')->group(function () {
   Route::get('friends-request', [FriendsListController::class, 'index']);
   Route::get('friends-request-received', [FriendsListController::class, 'showFriendsRequestReceived']);
   Route::post('friends-request', [FriendsListController::class, 'addFriend']);
-  // Route::post('friends-request', [FriendsListController::class, 'acceptFriend']);
-  // Route::post('friends-request', [FriendsListController::class, 'rejectFriend']);
+  Route::post('friends-request/{id}/accept', [FriendsListController::class, 'acceptFriend']);
+  Route::post('friends-request/{id}/rejected', [FriendsListController::class, 'rejectFriend']);
 
   //LOGOUT
   Route::post('/logout', [AuthController::class, 'logout']);
