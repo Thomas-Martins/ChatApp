@@ -1,6 +1,6 @@
 import { useRef } from "react";
-import { useAuth } from "../contexts/AuthProvider";
 import { Navigate } from "react-router-dom";
+import { useAuth } from "../contexts/AuthProvider";
 
 export default function Register() {
     const usernameRef = useRef();
@@ -24,7 +24,7 @@ export default function Register() {
         };
         console.log(payload);
 
-          await fetch(`${import.meta.env.VITE_API_BASE_URL}/register`, {
+        await fetch(`${import.meta.env.VITE_API_BASE_URL}/register`, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             mode: "cors",

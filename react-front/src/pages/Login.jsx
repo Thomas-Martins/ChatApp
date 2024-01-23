@@ -1,14 +1,14 @@
 import { useRef } from "react";
-import { useAuth } from "../contexts/AuthProvider";
 import { Navigate } from "react-router-dom";
+import { useAuth } from "../contexts/AuthProvider";
 
 export default function Login() {
     const emailRef = useRef();
     const passwordRef = useRef();
     const { userData, setUserData, setToken } = useAuth();
 
-    if(userData){
-        return <Navigate to="/"/>
+    if (userData) {
+        return <Navigate to="/" />;
     }
 
     const onSubmit = async (e) => {

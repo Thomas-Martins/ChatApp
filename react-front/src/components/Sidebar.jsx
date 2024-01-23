@@ -1,20 +1,22 @@
+import { TiUserAddOutline } from "react-icons/ti";
 import { useAuth } from "../contexts/AuthProvider";
 
 export default function Sidebar() {
     const { userData, token, setUserData, setToken } = useAuth();
 
-    // Fonction pour récupérer la première lettre du nom d'utilisateur
+    // Function for getting the first letter of the username
     const getInitials = (username) => {
-        // Assurez-vous que le nom d'utilisateur n'est pas vide
+        // check if username is not empty
         if (!username) return "";
 
-        // Séparez le nom d'utilisateur en mots
+        // Split the username into words
         const words = username.split(" ");
 
-        // Obtenez la première lettre de chaque mot et joignez-les
+        // Get the first letter of each word and join them
         const initials = words.map((word) => word.charAt(0)).join("");
 
-        return initials.toUpperCase(); // Assurez-vous que les initiales sont en majuscules
+        // Make sure the initials are uppercase
+        return initials.toUpperCase();
     };
 
     const onLogout = async (e) => {
@@ -47,40 +49,54 @@ export default function Sidebar() {
     return (
         <div className="flex h-screen w-1/5 flex-col justify-between bg-gray-800">
             <div className="px-4 py-6">
-                <span className="grid h-14 w-1/2 place-content-center rounded-lg border-2 border-white bg-indigo-400">
-                    <img src="../src/assets/images/logo/logo.png" />
-                </span>
+                <div className="flex justify-between items-center mb-10">
+                    <span className="grid h-14 w-1/2 place-content-center rounded-lg border-2 border-white bg-indigo-400">
+                        <img src="../src/assets/images/logo/logo.png" />
+                    </span>
+                    <a href="/add-users">
+                        <TiUserAddOutline size={25} color="white" />
+                    </a>
+                </div>
 
-                <ul className="mt-6 space-y-1">
-                    <li className="inline-flex w-full justify-start items-center mb-2">
-                        <a
-                            href=""
-                            className="flex items-center text-sm font-medium text-gray-200 "
-                        >
-                            <span className="grid h-10 w-10 justify-center items-center rounded-lg bg-indigo-400 text-xl text-white font-semibold">
-                                C1
+                <div>
+                    <div className="flex justify-between items-center">
+                        <p className="text-gray-500 text-sm">MESSAGES</p>
+                        <a href="">
+                            <span className="text-gray-500 hover:text-white">
+                                +
                             </span>
-                            <div className="ml-3 font-semibold">
-                                Conversation 1
-                            </div>
                         </a>
-                    </li>
-                    <li className="inline-flex w-full justify-start items-center mb-2">
-                        <a
-                            href=""
-                            className="flex items-center text-sm font-medium text-gray-200 "
-                        >
-                            <span className="grid h-10 w-10 justify-center items-center rounded-lg bg-indigo-400 text-xl text-white font-semibold">
-                                C2
-                            </span>
-                            <div className="ml-3 font-semibold">
-                                Conversation 2
-                            </div>
-                        </a>
-                    </li>
-                </ul>
+                    </div>
+                    <ul className="mt-3 space-y-1">
+                        <li className="inline-flex w-full justify-start items-center mb-2">
+                            <a
+                                href=""
+                                className="flex items-center text-sm font-medium text-gray-200 "
+                            >
+                                <span className="grid h-10 w-10 justify-center items-center rounded-lg bg-indigo-400 text-xl text-white font-semibold">
+                                    C1
+                                </span>
+                                <div className="ml-3 font-semibold">
+                                    Conversation 1
+                                </div>
+                            </a>
+                        </li>
+                        <li className="inline-flex w-full justify-start items-center mb-2">
+                            <a
+                                href=""
+                                className="flex items-center text-sm font-medium text-gray-200 "
+                            >
+                                <span className="grid h-10 w-10 justify-center items-center rounded-lg bg-indigo-400 text-xl text-white font-semibold">
+                                    C2
+                                </span>
+                                <div className="ml-3 font-semibold">
+                                    Conversation 2
+                                </div>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
             </div>
-
             <div className="flex items-center sticky inset-x-0 bottom-0 border-t border-gray-600">
                 <a
                     href="#"
@@ -89,7 +105,6 @@ export default function Sidebar() {
                     <span className="grid h-10 w-10 justify-center items-center rounded-lg bg-indigo-400 text-xl text-white font-semibold">
                         {getInitials(userData.username)}
                     </span>
-
                     <div>
                         <p className="text-xs text-gray-200">
                             <strong className="block font-medium">
@@ -117,7 +132,6 @@ export default function Sidebar() {
                             d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"
                         />
                     </svg>
-
                     <span className="absolute start-full top-1/2 ms-4 -translate-y-1/2 rounded bg-gray-900 px-2 py-1.5 text-xs font-medium text-white invisible group-hover:visible">
                         Logout
                     </span>
