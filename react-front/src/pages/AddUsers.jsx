@@ -19,33 +19,6 @@ export default function AddUsers() {
         setInputUsername(username);
     };
 
-    const addFriend = (event) => {
-        event.preventDefault();
-        fetch("http://localhost:8000/api/friends-request", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-                Authorization: `Bearer ${token}`,
-            },
-            mode: "cors",
-            body: JSON.stringify({
-                username: inputUsername,
-            }),
-        })
-            .then((response) => {
-                if (!response.ok) {
-                    throw new Error("Réponse réseau incorrecte");
-                }
-                return response.json();
-            })
-            .then((data) => {
-                setFriendRequestMessage(data);
-            })
-            .catch((error) => {
-                console.log(error.message);
-            });
-    };
-
     const fetchFriendsSendRequest = (token) => {
         fetch("http://localhost:8000/api/friends-request", {
             method: "GET",
@@ -111,6 +84,82 @@ export default function AddUsers() {
         }
     };
 
+    const addFriend = (event) => {
+        event.preventDefault();
+        fetch("http://localhost:8000/api/friends-request", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${token}`,
+            },
+            mode: "cors",
+            body: JSON.stringify({
+                username: inputUsername,
+            }),
+        })
+            .then((response) => {
+                if (!response.ok) {
+                    throw new Error("Réponse réseau incorrecte");
+                }
+                return response.json();
+            })
+            .then((data) => {
+                setFriendRequestMessage(data);
+            })
+            .catch((error) => {
+                console.log(error.message);
+            });
+    };
+
+    const acceptFriend = (requestId) => {
+        // console.log("Accept friend");
+        fetch(`http://localhost:8000/api/friends-request/${requestId}/accept`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${token}`,
+            },
+            mode: "cors",
+        })
+            .then((response) => {
+                if (!response.ok) {
+                    throw new Error("Réponse réseau incorrecte");
+                }
+                return response.json();
+            })
+            .then((data) => {
+                console.log(data);
+            })
+            .catch((error) => {
+                console.log(error.message);
+            });
+    };
+
+    const rejectFriend = (requestId) => {
+        fetch(
+            `http://localhost:8000/api/friends-request/${requestId}/rejected`,
+            {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    Authorization: `Bearer ${token}`,
+                },
+                mode: "cors",
+            }
+        )
+            .then((response) => {
+                if (!response.ok) {
+                    throw new Error("Réponse réseau incorrecte");
+                }
+                return response.json();
+            })
+            .then((data) => {
+                console.log(data);
+            })
+            .catch((error) => {
+                console.log(error.message);
+            });
+    };
     return (
         <div className="text-white p-4">
             {/* Input for adding a friend */}
@@ -174,10 +223,7 @@ export default function AddUsers() {
                                         <div className="flex items-center">
                                             <div className="grid h-14 w-14 place-content-center rounded-lg border-2 border-white bg-indigo-400">
                                                 <img
-                                                    src={
-                                                        request.sender
-                                                            .profileImage
-                                                    }
+                                                    src="../src/assets/images/logo/logo.png"
                                                     alt="Profile"
                                                 />
                                             </div>
@@ -194,10 +240,18 @@ export default function AddUsers() {
                                             </div>
                                         </div>
                                         <div className="flex items-center">
-                                            <button className="bg-emerald-600 py-2 px-5 rounded mr-2">
+                                            <button
+                                                onClick={() =>
+                                                    acceptFriend(request.id)
+                                                }
+                                                className="bg-emerald-600 py-2 px-5 rounded mr-2"
+                                            >
                                                 Accepter
                                             </button>
-                                            <button className="bg-red-600 py-2 px-5 rounded">
+                                            <button
+                                                onClick={rejectFriend}
+                                                className="bg-red-600 py-2 px-5 rounded"
+                                            >
                                                 Refuser
                                             </button>
                                         </div>

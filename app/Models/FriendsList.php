@@ -14,6 +14,7 @@ class FriendsList extends Model
     protected $fillable = [
         'user_id',
         'friend_id',
+        'status'
     ];
 
     public function sender()

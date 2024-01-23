@@ -35,6 +35,7 @@ class FriendsListController extends Controller
         // Utilisez une jointure pour inclure les informations de l'utilisateur émetteur
         $friendRequests = FriendsList::where('friend_id', $userId)
             ->with('sender') // Nom de la relation définie dans le modèle FriendsList
+            ->where('status', 'Pending')
             ->get();
 
         if ($friendRequests->isEmpty()) {
@@ -78,12 +79,45 @@ class FriendsListController extends Controller
     }
 
     // Accept a friend Request POST
-    public function acceptFriend()
+    public function acceptFriend($id)
     {
+        // Get the current user (who is receiving the friend request)
+        $userId = Auth::user()->id;
+
+        // Utilisez l'ID dans l'URL pour récupérer la demande d'ami spécifique
+        $friendRequest = FriendsList::where('id', $id)
+            ->where('friend_id', $userId)
+            ->first();
+
+        if (!$friendRequest) {
+            return response()->json(['message' => 'Une erreur est survenue.'], 500);
+        } else {
+            $friendRequest->update([
+                'status' => 'Accepted',
+            ]);
+
+            return response()->json(['message' => '✅ Demande d\'ami acceptée.'], 200);
+        }
     }
 
     // Reject a friend Request POST or DELETE
     public function rejectFriend()
     {
+        // Get the current user (who is receiving the friend request)
+        $userId = Auth::user()->id;
+
+        $friendRequest = FriendsList::where('friend_id', $userId)
+            ->where('status', 'Pending')
+            ->first();
+
+        if (!$friendRequest) {
+            return response()->json(['message' => 'Une erreur est survenue.'], 500);
+        } else {
+            $friendRequest->update([
+                'status' => 'Rejected',
+            ]);
+
+            return response()->json(['message' => '❌ Demande d\'ami rejetée.'], 200);
+        }
     }
 }
