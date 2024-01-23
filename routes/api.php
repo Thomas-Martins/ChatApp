@@ -1,6 +1,8 @@
 <?php
 
 use App\Http\Controllers\Api\AuthController;
+use App\Http\Controllers\Api\FriendsListController;
+use App\Models\FriendsList;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -22,14 +24,20 @@ use Illuminate\Support\Facades\Route;
 
 //Authenticated Route
 Route::middleware('auth:sanctum')->group(function () {
+  //FRIENDS REQUEST
+  Route::get('friends-request', [FriendsListController::class, 'index']);
+  Route::get('friends-request-received', [FriendsListController::class, 'showFriendsRequestReceived']);
+  Route::post('friends-request', [FriendsListController::class, 'addFriend']);
+  // Route::post('friends-request', [FriendsListController::class, 'acceptFriend']);
+  // Route::post('friends-request', [FriendsListController::class, 'rejectFriend']);
 
   //LOGOUT
-  Route::post('/logout', [AuthController::class,'logout']);
+  Route::post('/logout', [AuthController::class, 'logout']);
 });
 
 //For Authentication routes
-Route::post('/register', [AuthController::class,'register']);
-Route::post('/login', [AuthController::class,'login']);
+Route::post('/register', [AuthController::class, 'register']);
+Route::post('/login', [AuthController::class, 'login']);
 
 // Route::get('/users', function(){
 //   return User::all();
