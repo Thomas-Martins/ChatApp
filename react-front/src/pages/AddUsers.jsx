@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { useAuth } from "../contexts/AuthProvider";
 
 export default function AddUsers() {
-    const { token, userData } = useAuth();
+    const { token } = useAuth();
     const [receiveRequest, setReceiveRequest] = useState([]);
     const [sendRequest, setSendRequest] = useState([]);
     const [inputUsername, setInputUsername] = useState("");
@@ -111,16 +111,19 @@ export default function AddUsers() {
             });
     };
 
-    const acceptFriend = (requestId) => {
+    const acceptFriend = async (requestId) => {
         // console.log("Accept friend");
-        fetch(`http://localhost:8000/api/friends-request/${requestId}/accept`, {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-                Authorization: `Bearer ${token}`,
-            },
-            mode: "cors",
-        })
+        await fetch(
+            `http://localhost:8000/api/friends-request/${requestId}/accept`,
+            {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    Authorization: `Bearer ${token}`,
+                },
+                mode: "cors",
+            }
+        )
             .then((response) => {
                 if (!response.ok) {
                     throw new Error("Réponse réseau incorrecte");
@@ -133,10 +136,12 @@ export default function AddUsers() {
             .catch((error) => {
                 console.log(error.message);
             });
+
+        window.location.reload();
     };
 
-    const rejectFriend = (requestId) => {
-        fetch(
+    const rejectFriend = async (requestId) => {
+        await fetch(
             `http://localhost:8000/api/friends-request/${requestId}/rejected`,
             {
                 method: "POST",
@@ -159,6 +164,8 @@ export default function AddUsers() {
             .catch((error) => {
                 console.log(error.message);
             });
+
+        window.location.reload();
     };
     return (
         <div className="text-white p-4">
