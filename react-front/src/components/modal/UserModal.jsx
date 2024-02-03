@@ -1,13 +1,18 @@
 import { FaPen } from "react-icons/fa6";
 import { Link } from "react-router-dom";
 
-export default function Modal({ user, setShowModal }) {
-  console.log(user);
+export default function UserModal({ user, setShowModal, setShowEditModal }) {
   const memberSince = new Date(user.created_at).toLocaleDateString("fr-FR", {
     year: "numeric",
     month: "long",
     day: "numeric",
   });
+
+  const handleChangeModal = () => {
+    setShowModal(false);
+    setShowEditModal(true);
+  };
+
   return (
     <>
       <div className="fixed z-50 bottom-24 left-5 ">
@@ -19,7 +24,7 @@ export default function Modal({ user, setShowModal }) {
               <Link
                 to="/edit-user"
                 className="absolute text-white right-2 top-2 bg-indigo-600 p-2 rounded-full hover:bg-indigo-800"
-                onClick={() => setShowModal(false)}
+                onClick={handleChangeModal}
               >
                 <FaPen size={15} />
               </Link>
