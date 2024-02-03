@@ -1,11 +1,12 @@
 import { useState } from "react";
 import { TiUserAddOutline } from "react-icons/ti";
 import { useAuth } from "../contexts/AuthProvider";
-import Modal from "./Modal";
+import UserModal from "./modal/UserModal";
 
 export default function Sidebar() {
   const { userData, token, setUserData, setToken } = useAuth();
   const [showModal, setShowModal] = useState(false);
+  const [showEditModal, setShowEditModal] = useState(false);
 
   // Function for getting the first letter of the username
   const getInitials = (username) => {
@@ -133,9 +134,11 @@ export default function Sidebar() {
         </button>
       </div>
       {showModal && (
-        <Modal user={userData} setShowModal={setShowModal}>
-          Test
-        </Modal>
+        <UserModal
+          user={userData}
+          setShowModal={setShowModal}
+          setShowEditModal={setShowEditModal}
+        />
       )}
     </div>
   );

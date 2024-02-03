@@ -195,7 +195,7 @@ export default function AddUsers() {
         </div>
         <button
           onClick={addFriend}
-          className="bg-emerald-600 py-2 px-5 rounded"
+          className="bg-emerald-500 py-2 px-5 rounded"
         >
           Ajouter
         </button>
