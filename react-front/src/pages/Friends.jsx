@@ -1,16 +1,19 @@
 import { useEffect, useState } from "react";
+import { TbDotsVertical, TbMessageCircle2Filled } from "react-icons/tb";
 import { useAuth } from "../contexts/AuthProvider";
 
-export default function AddUsers() {
-  const { token } = useAuth();
+export default function Friends() {
+  const { userData, token } = useAuth();
   const [receiveRequest, setReceiveRequest] = useState([]);
   const [sendRequest, setSendRequest] = useState([]);
   const [inputUsername, setInputUsername] = useState("");
   const [friendRequestMessage, setFriendRequestMessage] = useState("");
+  const [allFriendsList, setAllFriendsList] = useState([]);
 
   useEffect(() => {
     fetchFriendsSendRequest(token);
     fetchFriendsReceiveRequest(token);
+    getAllFriends();
   }, [token]);
 
   const inputChange = (event) => {
@@ -165,6 +168,28 @@ export default function AddUsers() {
 
     window.location.reload();
   };
+
+  const getAllFriends = () => {
+    fetch("http://localhost:8000/api/friends", {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      mode: "cors",
+    })
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error("Réponse réseau incorrecte");
+        }
+        return response.json();
+      })
+      .then((data) => {
+        setAllFriendsList(data);
+      })
+      .catch((error) => console.log(error));
+  };
+
   return (
     <div className="text-white p-4">
       {/* Input for adding a friend */}
@@ -290,6 +315,62 @@ export default function AddUsers() {
                   </div>
                 </div>
               ))}
+          </div>
+        )}
+      </div>
+
+      {/* All friends */}
+      <div>
+        <h1 className="mb-3">Amis</h1>
+        {Array.isArray(allFriendsList) && allFriendsList.length > 0 ? (
+          <div className="">
+            {allFriendsList.map((friendship) => {
+              // Vérifier si l'utilisateur connecté est le sender ou le receiver
+              const friend =
+                friendship.sender.id !== userData.id
+                  ? friendship.sender
+                  : friendship.receiver;
+              return (
+                <div
+                  key={friend.id}
+                  className="flex justify-between items-center hover:bg-gray-600 px-3 rounded-lg transition-all cursor-pointer"
+                >
+                  <div className="flex items-center w-full py-3 border-t-[1px] border-gray-600 ">
+                    <div className="grid h-14 w-14 place-content-center rounded-lg border-2 border-white bg-indigo-400">
+                      <img
+                        src="../src/assets/images/logo/logo.png"
+                        alt="Profile"
+                      />
+                    </div>
+                    <div className="ml-3">
+                      <p className="text-white font-semibold">
+                        {friend.username}
+                      </p>
+                    </div>
+                  </div>
+                  <div className="relative flex gap-5">
+                    <div className="group bg-slate-800 hover:bg-slate-900 rounded-full p-2 relative">
+                      <p className="opacity-0 group-hover:opacity-100 absolute bg-black text-center p-2 rounded-lg w-[140px] -top-12 -translate-x-[40%] transition-opacity duration-300">
+                        Envoyer un MP
+                      </p>
+                      <TbMessageCircle2Filled size={25} />
+                    </div>
+                    <div className="group bg-slate-800 hover:bg-slate-900 rounded-full p-2 ">
+                      <p className="opacity-0 group-hover:opacity-100 absolute bg-black text-center p-2 rounded-lg -top-12 -translate-x-1/4 transition-opacity duration-300">
+                        Plus
+                      </p>
+                      <TbDotsVertical size={25} />
+                    </div>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        ) : (
+          <div>
+            <p className="text-gray-400">
+              Tu n&apos;as pas encore d&apos;amis.
+            </p>
           </div>
         )}
       </div>

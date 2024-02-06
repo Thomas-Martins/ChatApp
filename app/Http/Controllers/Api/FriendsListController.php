@@ -11,12 +11,13 @@ use Illuminate\Support\Facades\Auth;
 class FriendsListController extends Controller
 {
     // Show All friends request that the users have sent: GET
-    public function index()
+    public function showRequestSend()
     {
         $userId = Auth::user()->id;
 
         // Utilisez une jointure pour inclure les informations de l'utilisateur destinataire
         $sentRequests = FriendsList::where('user_id', $userId)
+            ->where('status', 'Pending')
             ->with('receiver') // Nom de la relation définie dans le modèle FriendsList
             ->get();
 
@@ -119,5 +120,25 @@ class FriendsListController extends Controller
 
             return response()->json(['message' => '❌ Demande d\'ami rejetée.'], 200);
         }
+    }
+
+    //Show all friends of the current user: GET
+    public function showFriends()
+    {
+        $userId = Auth::user()->id;
+
+        $friendsList = FriendsList::where('status', 'Accepted')
+            ->where(function ($query) use ($userId) {
+                $query->where('user_id', $userId)
+                    ->orWhere('friend_id', $userId);
+            })
+            ->with(['sender', 'receiver'])
+            ->get();
+
+        if ($friendsList->isEmpty()) {
+            return response()->json(['message' => 'Pas d\'amis pour le moment.'], 200);
+        }
+
+        return $friendsList;
     }
 }

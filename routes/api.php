@@ -25,7 +25,8 @@ use Illuminate\Support\Facades\Route;
 //Authenticated Route
 Route::middleware('auth:sanctum')->group(function () {
   //FRIENDS REQUEST
-  Route::get('friends-request', [FriendsListController::class, 'index']);
+  Route::get('/friends', [FriendsListController::class, 'showFriends']);
+  Route::get('friends-request', [FriendsListController::class, 'showRequestSend']);
   Route::get('friends-request-received', [FriendsListController::class, 'showFriendsRequestReceived']);
   Route::post('friends-request', [FriendsListController::class, 'addFriend']);
   Route::post('friends-request/{id}/accept', [FriendsListController::class, 'acceptFriend']);
