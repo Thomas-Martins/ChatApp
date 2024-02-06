@@ -26,4 +26,10 @@ class FriendsList extends Model
     {
         return $this->belongsTo(User::class, 'friend_id', 'id');
     }
+
+    public function friends()
+    {
+        return $this->belongsToMany(User::class, 'friends_list', 'user_id', 'friend_id')
+            ->wherePivot('status', 'Accepted');
+    }
 }

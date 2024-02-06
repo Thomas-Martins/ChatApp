@@ -6,7 +6,6 @@ import UserModal from "./modal/UserModal";
 export default function Sidebar() {
   const { userData, token, setUserData, setToken } = useAuth();
   const [showModal, setShowModal] = useState(false);
-  const [showEditModal, setShowEditModal] = useState(false);
 
   // Function for getting the first letter of the username
   const getInitials = (username) => {
@@ -133,13 +132,7 @@ export default function Sidebar() {
           </span>
         </button>
       </div>
-      {showModal && (
-        <UserModal
-          user={userData}
-          setShowModal={setShowModal}
-          setShowEditModal={setShowEditModal}
-        />
-      )}
+      {showModal && <UserModal user={userData} setShowModal={setShowModal} />}
     </div>
   );
 }
