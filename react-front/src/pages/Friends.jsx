@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useAuth } from "../contexts/AuthProvider";
 
-export default function AddUsers() {
+export default function Friends() {
   const { token } = useAuth();
   const [receiveRequest, setReceiveRequest] = useState([]);
   const [sendRequest, setSendRequest] = useState([]);
