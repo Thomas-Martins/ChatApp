@@ -1,6 +1,15 @@
 import { useEffect, useState } from "react";
 import { TbDotsVertical, TbMessageCircle2Filled } from "react-icons/tb";
 import { useAuth } from "../contexts/AuthProvider";
+import { formatTimeDifference } from "../utils/formatTimeUtils";
+import {
+  acceptFriend,
+  addFriend,
+  fetchFriendsReceiveRequest,
+  fetchFriendsSendRequest,
+  getAllFriends,
+  rejectFriend,
+} from "../utils/friendUtils";
 
 export default function Friends() {
   const { userData, token } = useAuth();
@@ -11,9 +20,9 @@ export default function Friends() {
   const [allFriendsList, setAllFriendsList] = useState([]);
 
   useEffect(() => {
-    fetchFriendsSendRequest(token);
-    fetchFriendsReceiveRequest(token);
-    getAllFriends();
+    fetchFriendsSendRequest(token, setSendRequest);
+    fetchFriendsReceiveRequest(token, setReceiveRequest);
+    getAllFriends(token, setAllFriendsList);
   }, [token]);
 
   const inputChange = (event) => {
@@ -22,181 +31,13 @@ export default function Friends() {
     setInputUsername(username);
   };
 
-  const fetchFriendsSendRequest = (token) => {
-    fetch("http://localhost:8000/api/friends-request", {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
-      },
-      mode: "cors",
-    })
-      .then((response) => {
-        if (!response.ok) {
-          throw new Error("Réponse réseau incorrecte");
-        }
-        return response.json();
-      })
-      .then((data) => {
-        setSendRequest(data);
-      })
-      .catch((error) => console.log(error));
-  };
-
-  const fetchFriendsReceiveRequest = () => {
-    fetch("http://localhost:8000/api/friends-request-received", {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
-      },
-      mode: "cors",
-    })
-      .then((response) => {
-        if (!response.ok) {
-          throw new Error("Réponse réseau incorrecte");
-        }
-        return response.json();
-      })
-      .then((data) => {
-        setReceiveRequest(data);
-      })
-      .catch((error) => console.log(error));
-  };
-
-  // Fonction pour formater la différence de temps sans moment
-  const formatTimeDifference = (createdAt) => {
-    const now = new Date();
-    const createdAtDate = new Date(createdAt);
-    const differenceInMilliseconds = now - createdAtDate;
-    const differenceInSeconds = Math.floor(differenceInMilliseconds / 1000);
-    const differenceInMinutes = Math.floor(differenceInSeconds / 60);
-    const differenceInHours = Math.floor(differenceInMinutes / 60);
-    const differenceInDays = Math.floor(differenceInHours / 24);
-
-    if (differenceInDays >= 1) {
-      return `${differenceInDays} jour${differenceInDays > 1 ? "s" : ""}`;
-    } else if (differenceInHours >= 1) {
-      return `${differenceInHours} heure${differenceInHours > 1 ? "s" : ""}`;
-    } else {
-      return `${differenceInMinutes} minute${
-        differenceInMinutes > 1 ? "s" : ""
-      }`;
-    }
-  };
-
-  const addFriend = (event) => {
-    event.preventDefault();
-    fetch("http://localhost:8000/api/friends-request", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
-      },
-      mode: "cors",
-      body: JSON.stringify({
-        username: inputUsername,
-      }),
-    })
-      .then((response) => {
-        if (!response.ok) {
-          throw new Error("Réponse réseau incorrecte");
-        }
-        return response.json();
-      })
-      .then((data) => {
-        setFriendRequestMessage(data);
-      })
-      .catch((error) => {
-        console.log(error.message);
-      });
-  };
-
-  const acceptFriend = async (requestId) => {
-    // console.log("Accept friend");
-    await fetch(
-      `http://localhost:8000/api/friends-request/${requestId}/accept`,
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-        mode: "cors",
-      }
-    )
-      .then((response) => {
-        if (!response.ok) {
-          throw new Error("Réponse réseau incorrecte");
-        }
-        return response.json();
-      })
-      .then((data) => {
-        console.log(data);
-      })
-      .catch((error) => {
-        console.log(error.message);
-      });
-
-    window.location.reload();
-  };
-
-  const rejectFriend = async (requestId) => {
-    await fetch(
-      `http://localhost:8000/api/friends-request/${requestId}/rejected`,
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-        mode: "cors",
-      }
-    )
-      .then((response) => {
-        if (!response.ok) {
-          throw new Error("Réponse réseau incorrecte");
-        }
-        return response.json();
-      })
-      .then((data) => {
-        console.log(data);
-      })
-      .catch((error) => {
-        console.log(error.message);
-      });
-
-    window.location.reload();
-  };
-
-  const getAllFriends = () => {
-    fetch("http://localhost:8000/api/friends", {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
-      },
-      mode: "cors",
-    })
-      .then((response) => {
-        if (!response.ok) {
-          throw new Error("Réponse réseau incorrecte");
-        }
-        return response.json();
-      })
-      .then((data) => {
-        setAllFriendsList(data);
-      })
-      .catch((error) => console.log(error));
-  };
-
   return (
     <div className="text-white p-4">
       {/* Input for adding a friend */}
       <div className="mb-6">
         <h1 className="text-3xl mb-2">AJOUTER</h1>
         <p className="text-gray-400">
-          Tu peux ajouter des amis grâce à leur nom d'utilisateur.
+          Tu peux ajouter des amis grâce à leur nom d&apos;utilisateur.
         </p>
       </div>
       <div className="flex">
@@ -219,7 +60,9 @@ export default function Friends() {
           </label>
         </div>
         <button
-          onClick={addFriend}
+          onClick={() =>
+            addFriend(token, inputUsername, setFriendRequestMessage)
+          }
           className="bg-emerald-500 py-2 px-5 rounded"
         >
           Ajouter
@@ -265,13 +108,13 @@ export default function Friends() {
                     </div>
                     <div className="flex items-center">
                       <button
-                        onClick={() => acceptFriend(request.id)}
+                        onClick={() => acceptFriend(request.id, token)}
                         className="bg-emerald-600 py-2 px-5 rounded mr-2"
                       >
                         Accepter
                       </button>
                       <button
-                        onClick={rejectFriend}
+                        onClick={() => rejectFriend(request.id, token)}
                         className="bg-red-600 py-2 px-5 rounded"
                       >
                         Refuser

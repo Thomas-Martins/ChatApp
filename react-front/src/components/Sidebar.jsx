@@ -6,6 +6,7 @@ import UserModal from "./modal/UserModal";
 export default function Sidebar() {
   const { userData, token, setUserData, setToken } = useAuth();
   const [showModal, setShowModal] = useState(false);
+  const [showMessageModal, setShowMessageModal] = useState(false);
 
   // Function for getting the first letter of the username
   const getInitials = (username) => {
@@ -62,11 +63,29 @@ export default function Sidebar() {
         </div>
 
         <div>
-          <div className="flex justify-between items-center">
+          <div className="flex justify-between items-center relative bg-green-500">
             <p className="text-gray-500 text-sm">MESSAGES</p>
-            <a href="">
+            <button onClick={() => setShowMessageModal(!showMessageModal)}>
               <span className="text-gray-500 hover:text-white">+</span>
-            </a>
+            </button>
+            {showMessageModal && (
+              <div className="absolute bg-red-600 text-white top-10">
+                <div className="w-[350px] h-[350px] rounded-lg">
+                  {/*content*/}
+                  <div className="bg-gray-700 border-0 rounded-lg shadow-lg relative flex flex-col w-full outline-none focus:outline-none">
+                    {/*header*/}
+                    <div className="w-full h-[50px] bg-indigo-400 relative rounded-t-lg">
+                      <a
+                        to="/edit-user"
+                        className="absolute text-white right-2 top-2 bg-indigo-600 p-2 rounded-full hover:bg-indigo-800"
+                      >
+                        x
+                      </a>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
           </div>
           <ul className="mt-3 space-y-1">
             <li className="inline-flex w-full justify-start items-center mb-2">
