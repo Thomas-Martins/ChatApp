@@ -1,21 +1,42 @@
 import { FaPen } from "react-icons/fa6";
 import { Link } from "react-router-dom";
 
-export default function UserModal({ user, setShowModal, setShowEditModal }) {
+import PropTypes from "prop-types";
+import { useEffect } from "react";
+
+UserModal.propTypes = {
+  user: PropTypes.object.isRequired,
+  setShowModal: PropTypes.func.isRequired,
+  modalRef: PropTypes.object.isRequired,
+};
+
+export default function UserModal({ user, setShowModal, modalRef }) {
+  const handleChangeModal = () => {
+    setShowModal(false);
+  };
+
   const memberSince = new Date(user.created_at).toLocaleDateString("fr-FR", {
     year: "numeric",
     month: "long",
     day: "numeric",
   });
 
-  const handleChangeModal = () => {
-    setShowModal(false);
-    setShowEditModal(true);
+  useEffect(() => {
+    document.addEventListener("mousedown", handleClickOutsideModal);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutsideModal);
+    };
+  });
+
+  const handleClickOutsideModal = (event) => {
+    if (modalRef.current && !modalRef.current.contains(event.target)) {
+      setShowModal(false);
+    }
   };
 
   return (
     <>
-      <div className="fixed z-50 bottom-24 left-5 ">
+      <div ref={modalRef} className="fixed z-50 bottom-24 left-5 ">
         <div className="w-[350px] rounded-lg">
           {/*content*/}
           <div className="bg-gray-700 border-0 rounded-lg shadow-lg relative flex flex-col w-full outline-none focus:outline-none">

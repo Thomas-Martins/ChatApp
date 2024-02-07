@@ -1,11 +1,24 @@
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { TiUserAddOutline } from "react-icons/ti";
 import { useAuth } from "../contexts/AuthProvider";
+import { getAllFriends } from "../utils/friendUtils";
 import UserModal from "./modal/UserModal";
 
 export default function Sidebar() {
   const { userData, token, setUserData, setToken } = useAuth();
   const [showModal, setShowModal] = useState(false);
+  const [showMessageModal, setShowMessageModal] = useState(false);
+  const [friendList, setFriendList] = useState([]);
+  const [selectedFriendId, setSelectedFriendId] = useState(null);
+  const modalRef = useRef(null);
+
+  useEffect(() => {
+    getAllFriends(token, setFriendList);
+    document.addEventListener("mousedown", handleClickOutsideModal);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutsideModal);
+    };
+  }, [token]);
 
   // Function for getting the first letter of the username
   const getInitials = (username) => {
@@ -24,7 +37,6 @@ export default function Sidebar() {
 
   const onLogout = async (e) => {
     e.preventDefault();
-
     await fetch(`${import.meta.env.VITE_API_BASE_URL}/logout`, {
       method: "POST",
       headers: {
@@ -49,6 +61,17 @@ export default function Sidebar() {
         console.error(error);
       });
   };
+
+  const handleClickOutsideModal = (event) => {
+    if (modalRef.current && !modalRef.current.contains(event.target)) {
+      setShowMessageModal(false);
+    }
+  };
+
+  const handleFriendSelection = (friendId) => {
+    setSelectedFriendId(friendId);
+  };
+
   return (
     <div className="flex h-screen min-w-52 w-52 flex-col justify-between bg-gray-800">
       <div className="px-4 py-6">
@@ -62,11 +85,85 @@ export default function Sidebar() {
         </div>
 
         <div>
-          <div className="flex justify-between items-center">
+          <div className="flex justify-between items-center relative">
             <p className="text-gray-500 text-sm">MESSAGES</p>
-            <a href="">
+            <button onClick={() => setShowMessageModal(!showMessageModal)}>
               <span className="text-gray-500 hover:text-white">+</span>
-            </a>
+            </button>
+            {showMessageModal && (
+              <div
+                ref={modalRef}
+                className="absolute z-50 -left-6 translate-x-1/2 top-10 bg-gray-700 text-white border-[1px] border-gray-800 rounded-lg shadow-2xl p-4"
+              >
+                <div className="relative w-[350px] h-[350px] rounded-lg">
+                  {/*content*/}
+                  <div className="">
+                    <div>
+                      <h1 className="font-semibold px-3 mb-3">
+                        Choisis une personne avec qui parler.
+                      </h1>
+                    </div>
+                    {Array.isArray(friendList) && friendList.length > 0 ? (
+                      <fieldset className="space-y-4">
+                        <legend className="sr-only">Friends</legend>
+                        {friendList.map((friends) => {
+                          // Vérifier si l'utilisateur connecté est le sender ou le receiver
+                          const friend =
+                            friends.sender.id !== userData.id
+                              ? friends.sender
+                              : friends.receiver;
+                          return (
+                            <div
+                              key={friend.id}
+                              className="flex justify-between items-center hover:bg-gray-600 px-3 rounded-lg transition-all cursor-pointer"
+                            >
+                              <label
+                                htmlFor={`friendCheckbox_${friend.id}`}
+                                className="flex items-center w-full"
+                              >
+                                <div className="flex items-center w-full py-3 gap-3">
+                                  <div className="grid h-12 w-14 place-content-center rounded-full border-white bg-indigo-400">
+                                    <img
+                                      src="../src/assets/images/logo/logo.png"
+                                      alt="Profile"
+                                    />
+                                  </div>
+                                  <div className="w-full">
+                                    <p className="text-white font-semibold">
+                                      {friend.username}
+                                    </p>
+                                  </div>
+                                </div>
+                                <input
+                                  type="radio"
+                                  id={`friendCheckbox_${friend.id}`}
+                                  name="selectedFriend"
+                                  className="size-5 border-gray-300 checked:accent-indigo-500"
+                                  value={friend.id}
+                                  checked={selectedFriendId === friend.id}
+                                  onChange={() =>
+                                    handleFriendSelection(friend.id)
+                                  }
+                                />
+                              </label>
+                            </div>
+                          );
+                        })}
+                      </fieldset>
+                    ) : (
+                      <div>
+                        <p className="text-gray-400">
+                          Tu n&apos;as pas encore d&apos;amis.
+                        </p>
+                      </div>
+                    )}
+                  </div>
+                </div>
+                <div className="bg-indigo-500 p-3 text-center rounded-lg shadow-lg hover:bg-indigo-600 duration-300">
+                  <button>Créer un MP</button>
+                </div>
+              </div>
+            )}
           </div>
           <ul className="mt-3 space-y-1">
             <li className="inline-flex w-full justify-start items-center mb-2">
@@ -132,7 +229,13 @@ export default function Sidebar() {
           </span>
         </button>
       </div>
-      {showModal && <UserModal user={userData} setShowModal={setShowModal} />}
+      {showModal && (
+        <UserModal
+          user={userData}
+          setShowModal={setShowModal}
+          modalRef={modalRef}
+        />
+      )}
     </div>
   );
 }
