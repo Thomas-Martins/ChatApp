@@ -2,10 +2,12 @@
 
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\FriendsListController;
+use App\Models\Conversation;
 use App\Models\FriendsList;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\Api\ConversationController;
 
 /*
 |--------------------------------------------------------------------------
@@ -31,6 +33,10 @@ Route::middleware('auth:sanctum')->group(function () {
   Route::post('friends-request', [FriendsListController::class, 'addFriend']);
   Route::post('friends-request/{id}/accept', [FriendsListController::class, 'acceptFriend']);
   Route::post('friends-request/{id}/rejected', [FriendsListController::class, 'rejectFriend']);
+
+  //CONVERSATION
+  Route::get('conversations', [ConversationController::class, 'allUserConversation']);
+  Route::post('conversations/new', [ConversationController::class, 'createConversation']);
 
   //LOGOUT
   Route::post('/logout', [AuthController::class, 'logout']);

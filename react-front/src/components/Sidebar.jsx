@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { TiUserAddOutline } from "react-icons/ti";
+import { Link } from "react-router-dom";
 import { useAuth } from "../contexts/AuthProvider";
 import { getAllFriends } from "../utils/friendUtils";
 import UserModal from "./modal/UserModal";
@@ -10,10 +11,12 @@ export default function Sidebar() {
   const [showMessageModal, setShowMessageModal] = useState(false);
   const [friendList, setFriendList] = useState([]);
   const [selectedFriendId, setSelectedFriendId] = useState(null);
+  const [conversations, setConversations] = useState([]);
   const modalRef = useRef(null);
 
   useEffect(() => {
     getAllFriends(token, setFriendList);
+    getAllConversations(token);
     document.addEventListener("mousedown", handleClickOutsideModal);
     return () => {
       document.removeEventListener("mousedown", handleClickOutsideModal);
@@ -22,16 +25,9 @@ export default function Sidebar() {
 
   // Function for getting the first letter of the username
   const getInitials = (username) => {
-    // check if username is not empty
     if (!username) return "";
-
-    // Split the username into words
     const words = username.split(" ");
-
-    // Get the first letter of each word and join them
     const initials = words.map((word) => word.charAt(0)).join("");
-
-    // Make sure the initials are uppercase
     return initials.toUpperCase();
   };
 
@@ -70,6 +66,55 @@ export default function Sidebar() {
 
   const handleFriendSelection = (friendId) => {
     setSelectedFriendId(friendId);
+  };
+
+  const createConversation = async (event) => {
+    event.preventDefault();
+    console.log("friend", selectedFriendId);
+    console.log("user", userData.id);
+    await fetch(`${import.meta.env.VITE_API_BASE_URL}/conversations/new`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      mode: "cors",
+      body: JSON.stringify({
+        user_1: userData.id,
+        user_2: selectedFriendId,
+      }),
+    })
+      .then((response) => {
+        console.log(response);
+      })
+      .catch((error) => {
+        console.error(error);
+      });
+    window.location.reload();
+  };
+
+  const getAllConversations = async () => {
+    await fetch(`${import.meta.env.VITE_API_BASE_URL}/conversations`, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      mode: "cors",
+    })
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error("Réponse réseau incorrecte");
+        }
+        return response.json();
+      })
+      .then((data) => {
+        setConversations(data);
+        console.log(data);
+      })
+      .catch((error) => {
+        console.error(error);
+      });
   };
 
   return (
@@ -160,35 +205,37 @@ export default function Sidebar() {
                   </div>
                 </div>
                 <div className="bg-indigo-500 p-3 text-center rounded-lg shadow-lg hover:bg-indigo-600 duration-300">
-                  <button>Créer un MP</button>
+                  <button onClick={createConversation}>Créer un MP</button>
                 </div>
               </div>
             )}
           </div>
-          <ul className="mt-3 space-y-1">
-            <li className="inline-flex w-full justify-start items-center mb-2">
-              <a
-                href=""
-                className="flex items-center text-sm font-medium text-gray-200 "
-              >
-                <span className="grid h-10 w-10 justify-center items-center rounded-lg bg-indigo-400 text-xl text-white font-semibold">
-                  C1
-                </span>
-                <div className="ml-3 font-semibold">Conversation 1</div>
-              </a>
-            </li>
-            <li className="inline-flex w-full justify-start items-center mb-2">
-              <a
-                href=""
-                className="flex items-center text-sm font-medium text-gray-200 "
-              >
-                <span className="grid h-10 w-10 justify-center items-center rounded-lg bg-indigo-400 text-xl text-white font-semibold">
-                  C2
-                </span>
-                <div className="ml-3 font-semibold">Conversation 2</div>
-              </a>
-            </li>
-          </ul>
+          {/* Lists of Conversation */}
+          {conversations && conversations.length > 0 ? (
+            conversations.map((conversation) => (
+              <div className="mt-3 space-y-1" key={conversation.id}>
+                <Link
+                  to={`/conversation/${conversation.id}`}
+                  className="flex items-center text-sm font-medium text-gray-200 "
+                >
+                  <span className="grid h-10 w-10 justify-center items-center rounded-lg bg-indigo-400 text-xl text-white font-semibold">
+                    C1
+                  </span>
+                  {conversation.user1_info.id === userData.id ? (
+                    <div className="ml-3 font-semibold">
+                      {conversation.user2_info.username}
+                    </div>
+                  ) : (
+                    <div className="ml-3 font-semibold">
+                      {conversation.user1_info.username}
+                    </div>
+                  )}
+                </Link>
+              </div>
+            ))
+          ) : (
+            <div className=" text-white mt-3">Aucune Conversations</div>
+          )}
         </div>
       </div>
       {/* User info */}
