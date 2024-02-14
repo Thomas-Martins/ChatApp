@@ -1,3 +1,4 @@
+import Pusher from "pusher-js";
 import { useEffect, useRef, useState } from "react";
 import { IoIosSend } from "react-icons/io";
 import { useLocation } from "react-router-dom";
@@ -10,8 +11,22 @@ export default function Conversation() {
   const inputMessageRef = useRef();
   const messagesContainerRef = useRef(null);
   const location = useLocation();
-  null;
   const [conversationInfo, setConversationInfo] = useState(null);
+  const channelRef = useRef(null);
+
+  useEffect(() => {
+    // Pusher.logToConsole = true;
+    const pusher = new Pusher("7cb7ce763cf21758a85f", {
+      cluster: "eu",
+    });
+    channelRef.current = pusher.subscribe("message-channel");
+
+    handleEvent();
+
+    return () => {
+      channelRef.current.unbind(); // Unbind event listeners on cleanup
+    };
+  }, []);
 
   useEffect(() => {
     if (location.state && location.state.conversationId) {
@@ -128,6 +143,21 @@ export default function Conversation() {
     }
   };
 
+  const handleEvent = () => {
+    channelRef.current.bind("message-event", function (data) {
+      console.log("EventData", data);
+
+      if (data && data.data && data.data.content) {
+        const newMessage = data.data;
+        console.log("New Message:", newMessage); // Vérifiez le contenu du nouveau message
+
+        setMessagesToDisplay((prevMessages) => [...prevMessages, newMessage]);
+      } else {
+        console.error("Invalid data structure:", data);
+      }
+    });
+  };
+
   return (
     <div className="h-full relative overflow-hidden">
       {/* title */}
@@ -156,6 +186,7 @@ export default function Conversation() {
         scrollbar-thumb-gray-900 
         scrollbar-track-gray-600
         scrollbar-w-8
+        px-4
       "
       >
         {messagesToDisplay.map((message, index) => {
@@ -177,7 +208,7 @@ export default function Conversation() {
         })}
       </div>
       {/* Input Message */}
-      <div className="text-white absolute bottom-0 left-0 w-full p-2">
+      <div className="text-white absolute bottom-0 left-0 w-full px-4 py-3">
         <div className="flex space-x-2 items-center">
           <input
             type="text"

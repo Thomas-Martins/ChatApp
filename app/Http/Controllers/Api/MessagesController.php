@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\Events\MessageEvent;
 use App\Events\NewMessageEvent;
 use App\Http\Controllers\Controller;
 use App\Models\Message;
@@ -32,7 +33,7 @@ class MessagesController extends Controller
 
         $message = Message::create($message);
 
-        event(new NewMessageEvent($message));
+        event(new MessageEvent($message));
 
         return response()->json($message);
     }
