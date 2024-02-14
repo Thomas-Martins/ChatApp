@@ -192,12 +192,12 @@ export default function Friends() {
                     </div>
                   </div>
                   <div className="relative flex gap-5">
-                    <div className="group bg-slate-800 hover:bg-slate-900 rounded-full p-2 relative">
+                    <button className="group bg-slate-800 hover:bg-slate-900 rounded-full p-2 relative">
                       <p className="opacity-0 group-hover:opacity-100 absolute bg-black text-center p-2 rounded-lg w-[140px] -top-12 -translate-x-[40%] transition-opacity duration-300">
                         Envoyer un MP
                       </p>
                       <TbMessageCircle2Filled size={25} />
-                    </div>
+                    </button>
                     <div className="group bg-slate-800 hover:bg-slate-900 rounded-full p-2 ">
                       <p className="opacity-0 group-hover:opacity-100 absolute bg-black text-center p-2 rounded-lg -top-12 -translate-x-1/4 transition-opacity duration-300">
                         Plus

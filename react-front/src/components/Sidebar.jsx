@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { TiUserAddOutline } from "react-icons/ti";
 import { Link } from "react-router-dom";
 import { useAuth } from "../contexts/AuthProvider";
+import { createConversation } from "../utils/conversationUtils";
 import { getAllFriends } from "../utils/friendUtils";
 import UserModal from "./modal/UserModal";
 
@@ -66,31 +67,6 @@ export default function Sidebar() {
 
   const handleFriendSelection = (friendId) => {
     setSelectedFriendId(friendId);
-  };
-
-  const createConversation = async (event) => {
-    event.preventDefault();
-    console.log("friend", selectedFriendId);
-    console.log("user", userData.id);
-    await fetch(`${import.meta.env.VITE_API_BASE_URL}/conversations/new`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
-      },
-      mode: "cors",
-      body: JSON.stringify({
-        user_1: userData.id,
-        user_2: selectedFriendId,
-      }),
-    })
-      .then((response) => {
-        console.log(response);
-      })
-      .catch((error) => {
-        console.error(error);
-      });
-    window.location.reload();
   };
 
   const getAllConversations = async () => {
@@ -205,7 +181,13 @@ export default function Sidebar() {
                   </div>
                 </div>
                 <div className="bg-indigo-500 p-3 text-center rounded-lg shadow-lg hover:bg-indigo-600 duration-300">
-                  <button onClick={createConversation}>Créer un MP</button>
+                  <button
+                    onClick={() =>
+                      createConversation(token, userData, selectedFriendId)
+                    }
+                  >
+                    Créer un MP
+                  </button>
                 </div>
               </div>
             )}
