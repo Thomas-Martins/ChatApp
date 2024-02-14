@@ -2,10 +2,14 @@
 
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\FriendsListController;
+use App\Models\Conversation;
 use App\Models\FriendsList;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\Api\ConversationController;
+use App\Http\Controllers\Api\MessagesController;
+use Symfony\Component\Mailer\DataCollector\MessageDataCollector;
 
 /*
 |--------------------------------------------------------------------------
@@ -32,6 +36,14 @@ Route::middleware('auth:sanctum')->group(function () {
   Route::post('friends-request/{id}/accept', [FriendsListController::class, 'acceptFriend']);
   Route::post('friends-request/{id}/rejected', [FriendsListController::class, 'rejectFriend']);
 
+  //CONVERSATION
+  Route::get('conversations', [ConversationController::class, 'allUserConversation']);
+  Route::post('conversations/new', [ConversationController::class, 'createConversation']);
+  Route::get('conversation/{id}', [ConversationController::class, 'showConversation']);
+  //Messages
+  Route::get('/messages', [MessagesController::class, 'index']);
+  Route::post('/messages', [MessagesController::class, 'store']);
+
   //LOGOUT
   Route::post('/logout', [AuthController::class, 'logout']);
 });
@@ -40,6 +52,4 @@ Route::middleware('auth:sanctum')->group(function () {
 Route::post('/register', [AuthController::class, 'register']);
 Route::post('/login', [AuthController::class, 'login']);
 
-// Route::get('/users', function(){
-//   return User::all();
-// });
+Route::get('messages/{id}', [MessagesController::class, 'show']);
