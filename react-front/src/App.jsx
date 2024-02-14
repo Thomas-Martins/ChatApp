@@ -12,8 +12,8 @@ function App() {
   return (
     <div className="flex">
       <Sidebar />
-      <div className="content bg-gray-700 w-full">
-        <div className="p-4">
+      <div className="content bg-gray-700 w-full overflow-y-auto">
+        <div className=" h-screen">
           <Outlet />
         </div>
       </div>

@@ -215,7 +215,12 @@ export default function Sidebar() {
             conversations.map((conversation) => (
               <div className="mt-3 space-y-1" key={conversation.id}>
                 <Link
-                  to={`/conversation/${conversation.id}`}
+                  to={`/conversation/${
+                    conversation.user1_info.id === userData.id
+                      ? conversation.user2_info.username
+                      : conversation.user1_info.username
+                  }`}
+                  state={{ conversationId: conversation.id }}
                   className="flex items-center text-sm font-medium text-gray-200 "
                 >
                   <span className="grid h-10 w-10 justify-center items-center rounded-lg bg-indigo-400 text-xl text-white font-semibold">

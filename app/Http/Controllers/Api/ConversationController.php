@@ -20,6 +20,15 @@ class ConversationController extends Controller
         return response()->json($conversations);
     }
 
+    public function showConversation($id)
+    {
+        $conversation = Conversation::with('user1Info', 'user2Info')
+            ->where('id', $id)
+            ->first();
+
+        return response()->json($conversation);
+    }
+
     public function createConversation(Request $request)
     {
         $conversation = $request->validate([
